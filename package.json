@@ -1,0 +1,21 @@
+{
+  "name": "tron-cold-wallet-offline",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TRON USDT cold wallet — offline toolkit. Wallet generation, restore, and air-gapped transaction signing.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "generate": "node src/generate-wallet.js",
+    "restore": "node src/restore-wallet.js",
+    "sign": "node src/sign-raw.js"
+  },
+  "dependencies": {
+    "@noble/curves": "^1.6.0",
+    "@noble/hashes": "^1.5.0",
+    "@scure/base": "^1.1.9",
+    "@scure/bip32": "^1.5.0",
+    "@scure/bip39": "^1.4.0"
+  }
+}
