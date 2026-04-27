@@ -20,18 +20,61 @@ TRON USDT холодный кошелёк — тулкит для **офлайн
 - Подпись неподписанных USDT TRC-20 транзакций — ключ никогда не касается диска или сети
 - Поддержка нескольких кошельков из одной мнемоники через индекс
 
-## Требования
+## Подготовка офлайн-машины
 
-- Node.js 18+
-- Запустить `npm install` **до отключения от интернета**
+### Вариант A: выделенный ноутбук
+
+После чистой установки Ubuntu/Debian — отключить сеть навсегда:
+
+```bash
+sudo systemctl disable --now NetworkManager
+sudo systemctl disable --now wpa_supplicant
+sudo rfkill block all
+```
+
+Убедиться что сеть мертва:
+
+```bash
+ip link show  # все интерфейсы должны быть DOWN
+ping 8.8.8.8  # должен упасть
+```
+
+### Установка Node.js
+
+На **онлайн-машине** скачать бинарник Node.js (установщик не нужен).  
+Актуальную версию LTS и SHA-256 хеш смотреть на https://nodejs.org/en/download/
+
+```bash
+wget https://nodejs.org/dist/vX.Y.Z/node-vX.Y.Z-linux-x64.tar.xz
+
+# Проверить контрольную сумму — сравнить с хешем на nodejs.org
+sha256sum node-vX.Y.Z-linux-x64.tar.xz
+```
+
+Скопировать архив и папку проекта (включая `node_modules`) на USB.
+
+На **офлайн-машине**:
+
+```bash
+tar xf node-vX.Y.Z-linux-x64.tar.xz
+export PATH=$PWD/node-vX.Y.Z-linux-x64/bin:$PATH
+
+# Для сохранения между сессиями добавить в ~/.bashrc:
+# echo 'export PATH=/path/to/node-vX.Y.Z-linux-x64/bin:$PATH' >> ~/.bashrc
+
+node --version
+```
 
 ## Установка
 
+Запустить `npm install` **до отключения от интернета** — `node_modules` должен быть скопирован на офлайн-машину.
+
 ```bash
-git clone https://github.com/YOUR_USERNAME/tron-cold-wallet-offline.git
+git clone https://github.com/ivanrmnvch/tron-cold-wallet-offline.git
 cd tron-cold-wallet-offline
 npm install
-# отключить от интернета — эта машина должна оставаться офлайн
+# Скопировать всю папку (с node_modules) на USB
+# На офлайн-машине npm install не нужен
 ```
 
 ## Использование
@@ -44,7 +87,7 @@ node src/generate-wallet.js
 
 Выводит 24-словную мнемонику, TRON-адрес и приватный ключ.
 
-**Запиши мнемонику на бумагу. Никогда не сохраняй в цифровом виде.**  
+**Записать мнемонику на бумагу. Никогда не сохранять в цифровом виде.**  
 После записи: `clear && history -c`
 
 ### Восстановление кошелька / деривация приватного ключа
@@ -58,7 +101,7 @@ node src/restore-wallet.js
 
 ### Подпись транзакции
 
-Скопируй `unsigned_tx.json` с онлайн-машины через USB, затем:
+Скопировать `unsigned_tx.json` с онлайн-машины через USB, затем:
 
 ```bash
 node src/sign-raw.js
@@ -72,7 +115,7 @@ node src/sign-raw.js
 5. Проверяет соответствие ключа адресу отправителя
 6. Подписывает и записывает `signed_tx.json`
 
-Скопируй `signed_tx.json` обратно на онлайн-машину и отправь.
+Скопировать `signed_tx.json` обратно на онлайн-машину и отправить.
 
 ## Модель безопасности
 
@@ -99,4 +142,4 @@ node src/sign-raw.js
 
 ## Связанные репозитории
 
-- [tron-cold-wallet-online](https://github.com/YOUR_USERNAME/tron-cold-wallet-online) — онлайн-компаньон (ноль внешних зависимостей)
+- [tron-cold-wallet-online](https://github.com/ivanrmnvch/tron-cold-wallet-online) — онлайн-компаньон (ноль внешних зависимостей)

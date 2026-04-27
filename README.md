@@ -20,18 +20,61 @@ Part of a two-machine air-gap workflow:
 - Sign unsigned USDT TRC-20 transactions — private key never touches disk or internet
 - Supports multiple wallets from one mnemonic via wallet index
 
-## Requirements
+## Preparing the offline machine
 
-- Node.js 18+
-- Run `npm install` **before taking offline**
+### Option A: Dedicated laptop
+
+After a clean Ubuntu/Debian install, disable the network permanently:
+
+```bash
+sudo systemctl disable --now NetworkManager
+sudo systemctl disable --now wpa_supplicant
+sudo rfkill block all
+```
+
+Verify the network is dead:
+
+```bash
+ip link show  # all interfaces should be DOWN
+ping 8.8.8.8  # should fail
+```
+
+### Node.js installation
+
+On the **online machine**, download the Node.js binary (no installer required).  
+Check the latest LTS version and SHA-256 hash at https://nodejs.org/en/download/
+
+```bash
+wget https://nodejs.org/dist/vX.Y.Z/node-vX.Y.Z-linux-x64.tar.xz
+
+# Verify checksum — compare with the hash on nodejs.org
+sha256sum node-vX.Y.Z-linux-x64.tar.xz
+```
+
+Copy the archive and the project folder (including `node_modules`) to USB.
+
+On the **offline machine**:
+
+```bash
+tar xf node-vX.Y.Z-linux-x64.tar.xz
+export PATH=$PWD/node-vX.Y.Z-linux-x64/bin:$PATH
+
+# To persist across sessions, add to ~/.bashrc:
+# echo 'export PATH=/path/to/node-vX.Y.Z-linux-x64/bin:$PATH' >> ~/.bashrc
+
+node --version
+```
 
 ## Installation
 
+Run `npm install` **before** going offline — `node_modules` must be on the offline machine.
+
 ```bash
-git clone https://github.com/YOUR_USERNAME/tron-cold-wallet-offline.git
+git clone https://github.com/ivanrmnvch/tron-cold-wallet-offline.git
 cd tron-cold-wallet-offline
 npm install
-# disconnect from internet — this machine should stay offline
+# Copy the entire folder (with node_modules) to USB
+# On offline machine — no npm install needed
 ```
 
 ## Usage
@@ -99,4 +142,4 @@ All cryptography is provided by audited, minimal, zero-dependency libraries by [
 
 ## Related
 
-- [tron-cold-wallet-online](https://github.com/YOUR_USERNAME/tron-cold-wallet-online) — online companion (zero external deps)
+- [tron-cold-wallet-online](https://github.com/ivanrmnvch/tron-cold-wallet-online) — online companion (zero external deps)
